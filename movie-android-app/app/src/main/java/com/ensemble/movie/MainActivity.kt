@@ -3,6 +3,7 @@ package com.ensemble.movie
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.ensemble.movie.ui.theme.EnsembleTheme
 import com.ensemble.movie.viewmodel.MainViewModel
 
@@ -59,12 +61,19 @@ class MainActivity : ComponentActivity() {
                                 .weight(1f)
                         ) {
                             items(movies.value) { movie ->
-                                Text(
-                                    text = "${movie.title} (${movie.year})",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 16.dp)
-                                )
+                                Column {
+                                    AsyncImage(
+                                        model = "https://example.com/image.jpg",
+                                        contentDescription = "Translated description of what the image contains"
+                                    )
+                                    Text(
+                                        text = "${movie.title} (${movie.year})",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 16.dp)
+                                    )
+                                }
+                                
                             }
                         }
                     }
