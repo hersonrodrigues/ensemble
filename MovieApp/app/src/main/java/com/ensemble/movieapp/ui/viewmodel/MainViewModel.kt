@@ -1,5 +1,8 @@
-package com.ensemble.movie.viewmodel
+package com.ensemble.movieapp.ui.viewmodel
 
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ensemble.movie.model.Movie
@@ -32,6 +35,14 @@ class MainViewModel : ViewModel() {
 
     fun onSearch(text: String) {
         _searchText.value = text
+    }
+
+    fun handleActionButtonClick(context: Context, it: Movie) {
+        Toast.makeText(
+            context,
+            "Do nothing with ${it.title}",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }
 

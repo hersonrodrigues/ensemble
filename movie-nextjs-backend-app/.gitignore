@@ -1,0 +1,35 @@
+# Dependency directories
+node_modules/
+
+# Production build directory
+/.next/
+
+# IDE/Editor specific files
+.idea/
+.vscode/
+
+# Environment variables file (if using .env)
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Next.js cache
+/.next/cache/
+/.next/server/
+/.next/static/
+/.next/plugins/
+/.next/compiled/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Miscellaneous
+.DS_Store
+*.pem
+*.pid
+*.seed
+*.pid.lock
+*.log
+

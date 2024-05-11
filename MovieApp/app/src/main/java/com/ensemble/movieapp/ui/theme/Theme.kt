@@ -13,7 +13,7 @@ import com.ensemble.movie.ui.theme.Teal200
 private val DarkColorPalette = darkColorScheme(
     primary = Purple200,
     onSurfaceVariant = Purple700,
-    secondary = Teal200
+    secondary = Teal200,
 )
 
 private val LightColorPalette = lightColorScheme(
