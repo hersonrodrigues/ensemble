@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.ensemble.movie.model.Movie
+import com.ensemble.movieapp.ui.model.Movie
 import com.ensemble.movieapp.ui.theme.EnsembleTheme
 import com.ensemble.movieapp.ui.viewmodel.MainViewModel
 
@@ -32,37 +32,40 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             EnsembleTheme {
-                val viewModel: MainViewModel = viewModel()
-                val searchText = viewModel.searchText.collectAsState()
-                val movies = viewModel.movies.collectAsState()
-                val isSearching = viewModel.isSearching.collectAsState()
+//                val viewModel: MainViewModel = viewModel()
+//                val searchText = viewModel.searchText.collectAsState()
+//                val moviesState = viewModel.movieState
+//                val isSearching = viewModel.isSearching.collectAsState()
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(8.dp)
                 ) {
-                    TextField(
-                        value = searchText.value,
-                        onValueChange = viewModel::onSearch,
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text(text = "Search") },
-                        placeholder = { Text(text = "Search movies, series...") }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    if (isSearching.value) {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.align(Alignment.Center)
-                            )
-                        }
-                    } else {
-                        MovieList(
-                            movies = movies.value,
-                            onItemClick = {
-                                Log.i("MovieCardButton", "Do nothing when click on the button. Movie: ${it.title}")
-                            }
-                        )
+                    Box {
+                        Text(text = "This is a single text", modifier = Modifier.fillMaxWidth())
                     }
+//                    TextField(
+//                        value = searchText.value,
+//                        onValueChange = viewModel::onSearch,
+//                        modifier = Modifier.fillMaxWidth(),
+//                        label = { Text(text = "Search") },
+//                        placeholder = { Text(text = "Search movies, series...") }
+//                    )
+//                    Spacer(modifier = Modifier.height(16.dp))
+//                    if (isSearching.value) {
+//                        Box(modifier = Modifier.fillMaxSize()) {
+//                            CircularProgressIndicator(
+//                                modifier = Modifier.align(Alignment.Center)
+//                            )
+//                        }
+//                    } else {
+//                        MovieList(
+//                            movies = moviesState.result,
+//                            onItemClick = {
+//                                Log.i("MovieCardButton", "Do nothing when click on the button. Movie: ${it.title}")
+//                            }
+//                        )
+//                    }
                 }
             }
         }
@@ -107,19 +110,19 @@ fun MovieCard(
                 contentDescription = "Image cover of the movie: ${movie.title}",
                 modifier = Modifier.size(120.dp)
             )
-            Column {
+            Column(modifier = Modifier.padding(start = 8.dp)) {
                 Text(
                     text = movie.title,
                     style = TextStyle(
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
                 Text(
                     text = movie.year,
                     style = TextStyle(
-                        fontSize = 18.sp,
+                        fontSize = 17.sp,
                         fontWeight = FontWeight.Normal
                     ),
                     modifier = Modifier

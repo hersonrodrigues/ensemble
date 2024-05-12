@@ -1,18 +1,20 @@
 package com.ensemble.movieapp.api
 
-import com.ensemble.movie.model.Movie
+import com.ensemble.movieapp.ui.model.LikeRequest
+import com.ensemble.movieapp.ui.model.MovieResponse
+import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface ApiService {
-    @GET("movies")
-    suspend fun getMovies(): List<Movie>
+    @GET("api/movies")
+    suspend fun getMovies(@Query("search") search: String? = null) : Response<MovieResponse>
 
-    @POST("like")
-    suspend fun likeMovie(
-        @Query("deviceId") deviceId: String,
-        @Query("movieId") movieId: Int
-    ): Boolean
+    @GET("api/movies/like")
+    suspend fun getLikedMovies(@Query("deviceId") deviceId: String?)
+
+    @POST("api/movies/like")
+    suspend fun likeMovie(@Body likeRequest: LikeRequest?) : Boolean
 }
-

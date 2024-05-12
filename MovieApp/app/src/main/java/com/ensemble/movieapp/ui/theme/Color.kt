@@ -1,4 +1,4 @@
-package com.ensemble.movie.ui.theme
+package com.ensemble.movieapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

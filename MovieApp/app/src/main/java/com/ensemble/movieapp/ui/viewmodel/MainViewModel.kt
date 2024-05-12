@@ -1,12 +1,14 @@
 package com.ensemble.movieapp.ui.viewmodel
 
-import android.content.Context
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ensemble.movie.model.Movie
+import com.ensemble.movieapp.repository.MovieRepository
+import com.ensemble.movieapp.ui.model.MovieResponse
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
     private val _searchText = MutableStateFlow("")
@@ -15,39 +17,30 @@ class MainViewModel : ViewModel() {
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
 
-    private val _movies = MutableStateFlow(allMovies)
-    val movies = searchText
-        .debounce(1000L)
-        .onEach { _isSearching.update { true } }
-        .combine(_movies) { text, movies ->
-            if (text.isBlank()) {
-                allMovies
-            } else {
-                movies.filter { it.title.contains(text, ignoreCase = true) }
+    var movieState by mutableStateOf(MovieResponse(true, "", emptyList()))
+
+    private val movieRepository = MovieRepository()
+
+    init {
+        // Listen for changes to searchText and call handleSearch when it changes
+        viewModelScope.launch {
+            _searchText.collect { _ ->
+                handleSearch()
             }
         }
-        .onEach { _isSearching.update { false } }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            _movies.value
-        )
+    }
+    private fun handleSearch() {
+        viewModelScope.launch {
+            _isSearching.value = true
+            val response = movieRepository.getMovie(searchText.value)
+            movieState = movieState.copy(
+                result = response.body()?.result ?: emptyList()
+            )
+            _isSearching.value = false
+        }
+    }
 
     fun onSearch(text: String) {
         _searchText.value = text
     }
-
-    fun handleActionButtonClick(context: Context, it: Movie) {
-        Toast.makeText(
-            context,
-            "Do nothing with ${it.title}",
-            Toast.LENGTH_SHORT
-        ).show()
-    }
 }
-
-private val allMovies = listOf<Movie>(
-    Movie("Game Of Thrones", "2010", "https://m.media-amazon.com/images/M/MV5BN2IzYzBiOTQtNGZmMi00NDI5LTgxMzMtN2EzZjA1NjhlOGMxXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_SX300.jpg"),
-    Movie("Monsters, Inc.", "2001", "https://m.media-amazon.com/images/M/MV5BMTY1NTI0ODUyOF5BMl5BanBnXkFtZTgwNTEyNjQ0MDE@._V1_SX300.jpg"),
-    Movie("I, Robot", "2004", "https://m.media-amazon.com/images/M/MV5BNmE1OWI2ZGItMDUyOS00MmU5LWE0MzUtYTQ0YzA1YTE5MGYxXkEyXkFqcGdeQXVyMDM5ODIyNw@@._V1_SX300.jpg")
-)

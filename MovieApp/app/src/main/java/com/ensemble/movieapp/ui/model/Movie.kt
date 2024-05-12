@@ -1,7 +1,10 @@
-package com.ensemble.movie.model
+package com.ensemble.movieapp.ui.model
+
+import com.google.gson.annotations.SerializedName
 
 data class Movie(
-    val title: String,
-    val year: String,
-    val poster: String,
+    @SerializedName("imdbID") val imbId: String,
+    @SerializedName("Title") val title: String,
+    @SerializedName("Year") val year: String,
+    @SerializedName("Poster") val poster: String,
 )

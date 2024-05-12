@@ -5,10 +5,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import com.ensemble.movie.ui.theme.Purple200
-import com.ensemble.movie.ui.theme.Purple500
-import com.ensemble.movie.ui.theme.Purple700
-import com.ensemble.movie.ui.theme.Teal200
 
 private val DarkColorPalette = darkColorScheme(
     primary = Purple200,
