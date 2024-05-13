@@ -19,22 +19,23 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.ensemble.movieapp.ui.model.Movie
+import com.ensemble.movieapp.model.Movie
 import com.ensemble.movieapp.ui.theme.EnsembleTheme
 import com.ensemble.movieapp.ui.viewmodel.MainViewModel
+import kotlin.reflect.KFunction1
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,16 +43,26 @@ class MainActivity : ComponentActivity() {
         setContent {
             EnsembleTheme {
                 val viewModel: MainViewModel = viewModel()
-                val searchText = viewModel.searchText.collectAsState()
                 val moviesState = viewModel.movieState
-                val isSearching = viewModel.isSearching.collectAsState()
+                val searchText = viewModel.searchText.collectAsState()
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(8.dp)
                 ) {
+
+                    TextField(
+                        value = searchText.value,
+                        onValueChange = viewModel::onSearch,
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text(text = "Search") },
+                        placeholder = { Text(text = "Search movies, series...") }
+                    )
+
                     if (moviesState.success) {
-                        MovieComponent(searchText, isSearching, viewModel::onSearch, moviesState.result)
+                        MovieComponent(
+                            viewModel = viewModel
+                        )
                     } else {
                         Box {
                             Text(text = moviesState.error, modifier = Modifier.fillMaxWidth())
@@ -65,19 +76,12 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MovieComponent(
-    searchText: State<String>,
-    isSearching: State<Boolean>,
-    onSearch: (String) -> Unit,
-    movies: List<Movie>
+    viewModel: MainViewModel
 ) {
-    TextField(
-        value = searchText.value,
-        onValueChange = onSearch,
-        modifier = Modifier.fillMaxWidth(),
-        label = { Text(text = "Search") },
-        placeholder = { Text(text = "Search movies, series...") }
-    )
+    val isSearching = viewModel.isSearching.collectAsState()
+
     Spacer(modifier = Modifier.height(16.dp))
+
     if (isSearching.value) {
         Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(
@@ -86,34 +90,26 @@ fun MovieComponent(
         }
     } else {
         MovieList(
-            movies = movies,
-            onItemClick = {
-                Log.i("MovieCardButton", "Do nothing when click on the button. Movie: ${it.title}")
-            },
-            onLikeClick = {
-                Log.i("MovieCardButton", "Liked Movie: ${it.title}")
-            }
+            viewModel = viewModel,
         )
     }
 }
 
 @Composable
 fun MovieList(
-    movies: List<Movie>,
-    onItemClick: (Movie) -> Unit,
-    onLikeClick: (Movie) -> Unit
+    viewModel: MainViewModel,
 ) {
+    val movies = viewModel.movieState.movies
+
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
     ) {
         itemsIndexed(movies) { index, movie ->
             MovieCard(
+                viewModel = viewModel,
                 movie = movie,
-                onItemClick = onItemClick,
-                onLikeClick = onLikeClick,
-                index = index,
-                likedMovies = arrayListOf("tt2705436")
+                index = index
             )
         }
     }
@@ -121,14 +117,10 @@ fun MovieList(
 
 @Composable
 fun MovieCard(
+    viewModel: MainViewModel,
     movie: Movie,
-    onItemClick: (Movie) -> Unit,
-    onLikeClick: (Movie) -> Unit, // Callback for like button click
-    index: Int,
-    likedMovies: List<String>
+    index: Int
 ) {
-    val isLiked by remember { mutableStateOf(likedMovies.contains(movie.imbId)) }
-
     // Define different background color for odd/even elements
     val backgroundColor = if (index % 2 == 0) {
         MaterialTheme.colorScheme.background
@@ -171,7 +163,7 @@ fun MovieCard(
                     Row {
                         Button(
                             onClick = {
-                                onItemClick(movie)
+                                Log.i("MovieClick", "Do nothing on button click!")
                             },
                             modifier = Modifier.padding(top = 8.dp)
                         ) {
@@ -179,14 +171,15 @@ fun MovieCard(
                         }
                         IconButton(
                             onClick = {
-                                onLikeClick(movie)
+                                viewModel.handleLikeClick(movie)
                             }, // Trigger like button callback
                             modifier = Modifier
                                 .padding(8.dp)
                         ) {
                             // Use different icons based on like status
-                            val icon = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder
-                            Icon(icon, contentDescription = "Like")
+                            val icon = if (movie.liked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder
+                            val color = if (movie.liked) Color.Red else MaterialTheme.colorScheme.primary
+                            Icon(icon, contentDescription = "Like", tint = color)
                         }
                     }
                 }
